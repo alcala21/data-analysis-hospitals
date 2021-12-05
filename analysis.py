@@ -1,4 +1,5 @@
 import pandas as pd
+from matplotlib import pyplot as plt
 pd.set_option('display.max_columns', 8)
 
 dfs = dict()
@@ -15,19 +16,17 @@ df = (pd.concat(dfs, axis=0, ignore_index=True)
     .fillna({'gender': 'f'})
     .fillna({'bmi': 0, 'diagnosis': 0, 'blood_test': 0, 'ecg': 0, 'ultrasound': 0, 'mri': 0, 'xray': 0, 'children': 0, 'months': 0}))
 
-n_hospitals = df.hospital.value_counts()
-print(f"The answer to the 1st question is {n_hospitals.idxmax()}")
+df.age.plot(kind='hist', bins=[0, 15, 35, 55, 70, 80])
+plt.show()
+print("The answer to the 1st question: 15-35")
 
-r_stomach = df[df.hospital == 'general'].diagnosis.value_counts()['stomach'] / n_hospitals['general']
-print(f"The answer to the 2nd question is {round(r_stomach, 3)}")
+df.diagnosis.value_counts().plot(kind='pie')
+plt.show()
+print("The answer to the 2nd question: pregnancy")
 
-r_disc = df[df.hospital == 'sports'].diagnosis.value_counts()['dislocation'] / n_hospitals['sports']
-print(f"The answer to the 3rd question is {round(r_disc, 3)}")
-
-df_wide = df.pivot_table(columns='hospital', aggfunc='median')
-diff = df_wide.loc['age', 'general'] - df_wide.loc['age', 'sports']
-print(f"The answer to the 4th question is {diff}")
-
-tvals = df.loc[df.blood_test == 't'].hospital.value_counts()
-print(f"The answer to the 5th question is {tvals.idxmax()}, {tvals.max()} blood tests")
-
+fig, axes = plt.subplots()
+axes.violinplot(dataset=[df[df.hospital == 'general']["height"].values,
+                         df[df.hospital == 'prenatal']["height"].values,
+                         df[df.hospital == 'sports']["height"].values] )
+plt.show()
+print("The answer to the 3rd question: It's because the sports hospital treats mostly athletes and these tend to be taller than the general population.")
